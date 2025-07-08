@@ -44,6 +44,8 @@ namespace Paravia
         public bool InvadeMe { get; internal set; }
         public int Harvest { get; internal set; }
         public int Rats { get; internal set; }
+        public int GrainDemand { get; internal set; }
+        public int RatsAte { get; internal set; }
     }
 
     public class Game
@@ -299,7 +301,72 @@ namespace Paravia
 
         private void NewLandAndGrainPrices(Player player)
         {
+            double x, y, myRandom;
+            int h;
 
+            //Generate an offset for use in later int->float conversions.
+            myRandom = Randomizer.NextDouble();
+
+            /* If you think this C# code is ugly, you should see the original C. */
+            x = player.Land;
+            y = ((player.Serfs - player.Mills) * 100.0) * 5.0;
+            if (y < 0.0)
+            {
+                y = 0.0;
+            }
+
+            if (y < x)
+            {
+                x = y;
+            }
+
+            y = player.GrainReserve * 2.0;
+
+            if (y < x)
+            {
+                x = y;
+            }
+
+            y = player.Harvest + (myRandom + 0.5);
+            h = Convert.ToInt32(x * y);
+
+            player.GrainReserve += h;
+            player.GrainDemand = (player.Nobles * 100) + (player.Cathedral * 40) + (player.Merchants * 30);
+            player.GrainDemand += ((player.Soldiers * 10) + (player.Serfs * 5));
+            player.LandPrice = (3.0 * player.Harvest + Convert.ToDouble(Random(6)) + 10.0) / 10.0;
+
+            if (h < 0)
+            {
+                h *= -1;
+            }
+
+            if (h < 1)
+            {
+                y = 2.0;
+            }
+            else
+            {
+                y = Convert.ToDouble(player.GrainDemand / (double)h);
+                if (y > 2.0)
+                {
+                    y = 2.0;
+                }
+            }
+
+            if (y < 0.8)
+            {
+                y = 0.8;
+            }
+
+            player.LandPrice *= y;
+
+            if(player.LandPrice < 1.0)
+            {
+                player.LandPrice = 1.0;
+            }
+
+            player.GrainPrice = Convert.ToInt32(((6.0 - player.Harvest) * 3.0 + Random(5) + Random(5)) * 4.0 * y);
+            player.RatsAte = h;
         }
 
         private void GenerateHarvest(Player player)

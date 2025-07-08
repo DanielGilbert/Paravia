@@ -89,6 +89,8 @@ namespace Paravia
                 "Princess",
                 "* H.R.H. Queen"
             };
+
+            Players = new List<Player>();
         }
 
         private int Random(int hi)
@@ -200,6 +202,55 @@ namespace Paravia
         }
 
         private void PlayGame(List<Player> players, int numberOfPlayers)
+        {
+            bool AllDead, Winner;
+            int WinningPlayer = 0;
+            Player Baron;
+            AllDead = false;
+            Winner = false;
+            Baron = new Player();
+            InitializePlayer(Baron, 1400, 6, 4, "Peppone", true);
+
+            while (AllDead is false && Winner is false)
+            {
+                for(int i = 0; i < NumberOfPlayers; i++)
+                {
+                    if (!players[i].IsDead)
+                    {
+                        NewTurn(players[i], NumberOfPlayers, players, Baron);
+                    }
+                }
+
+                AllDead = true;
+
+                for(int i = 0; i < NumberOfPlayers; i++)
+                {
+                    if (AllDead && players[i].IsDead is false)
+                    {
+                        AllDead = false;
+                    }
+                }
+
+                for(int i = 0; i < NumberOfPlayers; i++)
+                {
+                    if (players[i].IWon is true)
+                    {
+                        Winner = true;
+                        WinningPlayer = 1;
+                    }
+                }
+            }
+
+            if (AllDead is true)
+            {
+                Console.WriteLine("The game has ended.");
+                return;
+            }
+
+            Console.WriteLine("Game Over. {0} {1} wins.", players[WinningPlayer].Title, players[WinningPlayer].Name);
+        }
+
+        private void NewTurn(Player player, int numberOfPlayers, List<Player> players, Player baron)
         {
             throw new NotImplementedException();
         }

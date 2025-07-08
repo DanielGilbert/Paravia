@@ -41,6 +41,9 @@ namespace Paravia
         public int WhichPlayer { get; internal set; }
         public int Year { get; internal set; }
         public int YearOfDeath { get; internal set; }
+        public bool InvadeMe { get; internal set; }
+        public int Harvest { get; internal set; }
+        public int Rats { get; internal set; }
     }
 
     public class Game
@@ -110,6 +113,7 @@ namespace Paravia
             player.IncomeTax = 5;
             player.IsBankrupt = false;
             player.IsDead = false;
+            player.InvadeMe = false;
             player.IWon = false;
             player.Justice = 2;
             player.Land = 10000;
@@ -252,7 +256,57 @@ namespace Paravia
 
         private void NewTurn(Player player, int numberOfPlayers, List<Player> players, Player baron)
         {
-            throw new NotImplementedException();
+            GenerateHarvest(player);
+            NewLandAndGrainPrices(player);
+            BuySellGrain(player);
+            ReleaseGrain(player);
+
+            if (player.InvadeMe is true)
+            {
+                int i = 0;
+                for(i = 0; i < NumberOfPlayers; i++)
+                {
+                    if (i != player.WhichPlayer)
+                    {
+                        if (players[i].Soldiers > (player.Soldiers * 2.4))
+                        {
+                            AttackNeighbor(players[i], player);
+                            i = 9;
+                        }
+                    }
+                }
+
+                if (i != 9)
+                    AttackNeighbor(baron, player);
+            }
+
+            AdjustTax(player);
+            DrawMap(player);
+            StatePurchases(player);
+            CheckNewTitle(player);
+
+            player.Year++;
+            if (player.Year == player.YearOfDeath)
+            {
+                ImDead(player);
+            }
+
+            if (player.TitleNum >= 7)
+            {
+                player.IWon = true;
+            }
+        }
+
+        private void NewLandAndGrainPrices(Player player)
+        {
+
+        }
+
+        private void GenerateHarvest(Player player)
+        {
+            player.Harvest = (Random(5) + Random(6)) / 2;
+            player.Rats = Random(50);
+            player.GrainReserve = ((player.GrainReserve * 100) - (player.GrainReserve * player.Rats)) / 100;
         }
 
         private void PrintInstructions()

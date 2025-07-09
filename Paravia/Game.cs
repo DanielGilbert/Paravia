@@ -246,7 +246,7 @@
                     if (players[i].IWon is true)
                     {
                         Winner = true;
-                        WinningPlayer = 1;
+                        WinningPlayer = i;
                     }
                 }
             }
@@ -290,20 +290,254 @@
             }
 
             AdjustTax(player);
-            //DrawMap(player);
-            //StatePurchases(player);
-            //CheckNewTitle(player);
+            DrawMap(player);
+            StatePurchases(player, numberOfPlayers, players);
+            _ = CheckNewTitle(player);
 
             player.Year++;
             if (player.Year == player.YearOfDeath)
             {
-                //ImDead(player);
+                ImDead(player);
             }
 
             if (player.TitleNum >= 7)
             {
                 player.IWon = true;
             }
+        }
+
+        private void ImDead(Player player)
+        {
+            int why = 0;
+
+            Console.WriteLine();
+            Console.WriteLine();
+            Console.WriteLine("Very sad news.");
+            Console.WriteLine("{0} {1} has just died", player.Title, player.Name);
+            if (player.Year > 1450)
+            {
+                Console.WriteLine("of old age after a long reign.");
+            }
+            else
+            {
+                why = Random(8);
+
+                switch (why)
+                {
+                    case 0:
+                    case 1:
+                    case 2:
+                    case 3:
+                        Console.WriteLine("of pneumonia after a cold winter in a drafty castle.");
+                        break;
+
+                    case 4:
+                        Console.WriteLine("of typhoid after drinking contaminated water.");
+                        break;
+
+                    case 5:
+                        Console.WriteLine("in a smallpox epidemic.");
+                        break;
+
+                    case 6:
+                        Console.WriteLine("after being attacked by robbers while travelling.");
+                        break;
+
+                    case 7:
+                    case 8:
+                        Console.WriteLine("of food poisoning.");
+                        break;
+                }
+            }
+
+            player.IsDead = true;
+            Console.WriteLine("(Press ENTER): ");
+            Console.ReadLine();
+
+        }
+
+        private bool CheckNewTitle(Player player)
+        {
+            int total = 0;
+            /* Tally up our success so far . . . . */
+            total += Limit10(player.Marketplaces, 1);
+            total += Limit10(player.Palace, 1);
+            total += Limit10(player.Cathedral, 1);
+            total += Limit10(player.Mills, 1);
+            total += Limit10(player.Treasury, 5000);
+            total += Limit10(player.Land, 6000);
+            total += Limit10(player.Merchants, 50);
+            total += Limit10(player.Nobles, 5);
+            total += Limit10(player.Soldiers, 50);
+            total += Limit10(player.Clergy, 10);
+            total += Limit10(player.Serfs, 2000);
+            total += Limit10(Convert.ToInt32(player.PublicWorks * 100.0), 500);
+            player.TitleNum = (total / player.Difficulty) - player.Justice;
+
+            if (player.TitleNum > 7)
+            {
+                player.TitleNum = 7;
+            }
+            
+            if (player.TitleNum < 0)
+            {
+                player.TitleNum = 0;
+            }
+
+            /* Did we change (could be backwards or forwards)? */
+
+            if (player.TitleNum > player.OldTitle)
+            {
+                player.OldTitle = player.TitleNum;
+                ChangeTitle(player);
+                Console.WriteLine();
+                Console.WriteLine("Good news! {0} has achieved the rank of {1}", player.Name, player.Title);
+                Console.WriteLine();
+                return true;
+            }
+
+            //Revert to the old title. You won't loose a rank here.
+            player.TitleNum = player.OldTitle;
+
+            return false;
+        }
+
+        private void ChangeTitle(Player player)
+        {
+            if (player.MaleOrFemale)
+                player.Title = MaleTitles[player.TitleNum];
+            else
+                player.Title = FemaleTitles[player.TitleNum];
+
+            if (player.TitleNum == 7)
+            {
+                player.IWon = true;
+            }
+        }
+
+        private int Limit10(int num, int denom)
+        {
+            int val = num / denom;
+            return (val > 10 ? 10 : val);
+        }
+
+        private void StatePurchases(Player player, int howMany, List<Player> players)
+        {
+            string result = string.Empty;
+            int val = 1;
+            while(val != 0 || result[0] != 'q')
+            {
+                Console.WriteLine();
+                Console.WriteLine("{0} {1}", player.Title, player.Name);
+                Console.WriteLine("State purchases.");
+                Console.WriteLine();
+                Console.WriteLine("1. Marketplace ({0})\t\t\t\t1000 florins", player.Marketplaces);
+                Console.WriteLine("2. Woolen mill ({0})\t\t\t\t2000 florins", player.Mills);
+                Console.WriteLine("3. Palace (partial) ({0})\t\t\t\t3000 florins", player.Palace);
+                Console.WriteLine("4. Cathedral (partial) ({0})\t\t\t5000 florins", player.Cathedral);
+                Console.WriteLine("5. Equip one platoon of serfs as soldiers\t500 florins");
+                Console.WriteLine("You have {0} gold florins", player.Treasury);
+                Console.WriteLine("To continue, enter q. To compare standings, enter 6");
+                Console.Write("Your choice: ");
+                result = Console.ReadLine() ?? "q";
+                
+                if (result.ToLower() == "q")
+                {
+                    val = 0;
+                    continue;
+                }
+
+                val = Convert.ToInt32(result);
+
+                switch (val)
+                {
+                    case 1:
+                        BuyMarket(player);
+                        break;
+
+                    case 2:
+                        BuyMill(player);
+                        break;
+
+                    case 3:
+                        BuyPalace(player);
+                        break;
+
+                    case 4:
+                        BuyCathedral(player);
+                        break;
+
+                    case 5:
+                        BuySoldiers(player);
+                        break;
+
+                    case 6:
+                        ShowStats(player, howMany, players);
+                        break;
+                }
+            }
+        }
+
+        private void ShowStats(Player player, int howMany, List<Player> players)
+        {
+            Console.WriteLine("Nobles\tSoldiers\tClergy\tMerchants\tSerfs\tLand\tTreasury");
+            for (int i = 0; i < howMany; i++)
+            {
+                Console.WriteLine("{0} {1}", players[i].Title, players[i].Name);
+                Console.WriteLine("{0}\t{1}\t\t{2}\t{3}\t\t{4}\t{5}\t{6}",
+                                  players[i].Nobles, players[i].Soldiers,
+                                  players[i].Clergy, players[i].Merchants,
+                                  players[i].Serfs, players[i].Land,
+                                  players[i].Treasury);
+            }
+            Console.WriteLine("(Press ENTER)");
+        }
+
+        private void BuySoldiers(Player player)
+        {
+            player.Soldiers += 20;
+            player.Serfs -= 20;
+            player.Treasury -= 500;
+        }
+
+        private void BuyCathedral(Player player)
+        {
+            player.Cathedral += 1;
+            player.Clergy += Random(6);
+            player.Treasury -= 5000;
+            player.PublicWorks += 1.0;
+        }
+
+        private void BuyPalace(Player player)
+        {
+            player.Palace += 1;
+            player.Nobles += Random(2);
+            player.Treasury -= 3000;
+            player.PublicWorks += 0.5;
+        }
+
+        private void BuyMill(Player player)
+        {
+            player.Mills += 1;
+            player.Treasury -= 2000;
+            player.PublicWorks += 0.25;
+            return;
+        }
+
+        private void BuyMarket(Player player)
+        {
+            player.Marketplaces += 1;
+            player.Merchants += 5;
+            player.Treasury -= 1000;
+            player.PublicWorks += 1.0;
+            return;
+        }
+
+        private void DrawMap(Player player)
+        {
+            //This is missing in the C code.
+            //We'll translate that from the original TRS-80.
+            //(famous last words)
         }
 
         private void AdjustTax(Player player)
@@ -316,7 +550,109 @@
             {
                 Console.WriteLine("{0} {1}", player.Title, player.Name);
                 GenerateIncome(player);
+
+                Console.WriteLine("({0}%)\t\t({1}%)\t\t({2}%)", player.CustomsDuty, player.SalesTax, player.IncomeTax);
+                Console.WriteLine("1.Customs Duty, 2.Sales Tax, 3.Wealth Tax, ");
+                Console.WriteLine("4. Justice");
+                Console.Write("Enter tax number for changes, q to continue: ");
+
+                result = Console.ReadLine() ?? "q";
+                if (result.ToLower() == "q")
+                {
+                    val = 0;
+                    continue;
+                }
+
+                val = Convert.ToInt32(result);
+
+                Console.WriteLine();
+
+                switch (val)
+                {
+                    case 1:
+                        Console.Write("New customs duty (0 to 100): ");
+                        result = Console.ReadLine() ?? "0";
+                        duty = Convert.ToInt32(result);
+                        if (duty > 100)
+                            duty = 100;
+                        if (duty < 0)
+                            duty = 0;
+                        player.CustomsDuty = duty;
+                        break;
+
+                    case 2:
+                        Console.Write("New sales tax (0 to 50): ");
+                        result = Console.ReadLine() ?? "0";
+                        duty = Convert.ToInt32(result);
+                        if (duty > 50)
+                            duty = 50;
+                        if (duty < 0)
+                            duty = 0;
+                        player.SalesTax = duty;
+                        break;
+
+                    case 3:
+                        Console.Write("New sales tax (0 to 25): ");
+                        result = Console.ReadLine() ?? "0";
+                        duty = Convert.ToInt32(result);
+                        if (duty > 25)
+                            duty = 25;
+                        if (duty < 0)
+                            duty = 0;
+                        player.IncomeTax = duty;
+                        break;
+
+                    case 4:
+                        Console.WriteLine("Justice:  1. Very fair, 2. Moderate");
+                        Console.Write(" 3. Harsh, 4. Outrageous: ");
+                        result = Console.ReadLine() ?? "1";
+                        duty = Convert.ToInt32(result);
+                        if (duty > 4)
+                            duty = 4;
+                        if (duty < 1)
+                            duty = 1;
+                        player.Justice = duty;
+                        break;
+                }
+
             }
+            AddRevenue(player);
+
+            if (player.IsBankrupt)
+                SeizeAssets(player);
+        }
+
+        private void SeizeAssets(Player player)
+        {
+            string result = string.Empty;
+            player.Marketplaces = 0;
+            player.Palace = 0;
+            player.Cathedral = 0;
+            player.Mills = 0;
+            player.Land = 6000;
+            player.PublicWorks = 1.0;
+            player.Treasury = 100;
+            player.IsBankrupt = false;
+            Console.WriteLine();
+            Console.WriteLine("{0} {1} is bankrupt.", player.Title, player.Name);
+            Console.WriteLine();
+            Console.WriteLine("Creditors have seized much of your assets.");
+            Console.WriteLine("(Press ENTER): ");
+            Console.ReadLine();
+            return;
+        }
+
+        private void AddRevenue(Player player)
+        {
+            player.Treasury += (player.JusticeRevenue + player.CustomsDutyRevenue);
+            player.Treasury += (player.IncomeTaxRevenue + player.SalesTaxRevenue);
+            /* Penalize deficit spending. */
+            if (player.Treasury < 0)
+                player.Treasury = (int)((float)player.Treasury * 1.5);
+            /* Will a title make the creditors happy (for now)? */
+            if (player.Treasury < (-10000 * player.TitleNum))
+                player.IsBankrupt = true;
+            return;
         }
 
         private void GenerateIncome(Player player)
@@ -635,11 +971,13 @@
                 Console.WriteLine("Year {0:d}", player.Year);
                 Console.WriteLine();
                 Console.WriteLine("{0} {1}", player.Title, player.Name);
-                Console.WriteLine("Rats ate {0:d} of your grain reserves.", player.Rats);
+                Console.WriteLine();
+                Console.WriteLine();
+                Console.WriteLine("Rats ate {0}% of your grain reserves.", player.Rats);
                 PrintGrain(player);
                 Console.WriteLine("Grain\tGrain\tPrice of\tPrice of\tTreasury");
                 Console.WriteLine("Reserve\tDemand\tGrain\t\tLand");
-                Console.WriteLine("{0:d}\t{1:d}\t{2:d}\t\t{3}\t\t{4}", player.GrainReserve, player.GrainDemand, player.GrainPrice, player.LandPrice, player.Treasury);
+                Console.WriteLine("{0:d}\t{1:d}\t{2:d}\t\t{3:0.00}\t\t{4}", player.GrainReserve, player.GrainDemand, player.GrainPrice, player.LandPrice, player.Treasury);
                 Console.WriteLine("steres\tsteres\t1000 st.\thectare\t\tgold florins");
                 Console.WriteLine();
                 Console.WriteLine("You have {0} hectares of land.", player.Land);

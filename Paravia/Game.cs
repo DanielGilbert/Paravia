@@ -206,7 +206,7 @@ namespace Paravia
                     continue;
                 }
 
-                Console.WriteLine("Is {0} male or female (m or f)?", Players[i].Name);
+                Console.WriteLine("Is {0} male or female (m or f)?", rulersName);
                 string? gender = Console.ReadLine()?.ToLower() ?? "f";
                 bool isMale = (gender[0] == 'm');
                 Players.Add(new Player());
@@ -281,7 +281,7 @@ namespace Paravia
                     {
                         if (players[i].Soldiers > (player.Soldiers * 2.4))
                         {
-                            //AttackNeighbor(players[i], player);
+                            _ = AttackNeighbor(players[i], player);
                             i = 9;
                         }
                     }
@@ -289,7 +289,7 @@ namespace Paravia
 
                 if (i != 9)
                 {
-                    //AttackNeighbor(baron, player);
+                    _ = AttackNeighbor(baron, player);
                 }
 
             }
@@ -311,6 +311,46 @@ namespace Paravia
             }
         }
 
+        private int AttackNeighbor(Player player, Player opponent)
+        {
+            int landTaken = 0;
+            int deadSoldiers = 0;
+
+            if (player.WhichPlayer == 7)
+            {
+                landTaken = Random(9000) + 1000;
+            }
+            else
+            {
+                landTaken = (player.Soldiers * 1000) - (player.Land / 3);
+            }
+
+            if (landTaken > (opponent.Land - 5000))
+            {
+                landTaken = (opponent.Land - 5000) / 2;
+            }
+
+            player.Land += landTaken;
+            opponent.Land -= landTaken;
+
+            Console.WriteLine();
+            Console.WriteLine("{0} {1} of {2} invades and seizes {3} hectares of land!", player.Title, player.Name, player.City, landTaken);
+
+            deadSoldiers = Random(40);
+
+            if (deadSoldiers > (opponent.Soldiers - 15))
+            {
+                deadSoldiers = opponent.Soldiers - 15;
+            }
+
+            opponent.Soldiers -= deadSoldiers;
+
+            Console.WriteLine("{0} {1} loses {2} soldiers in battle.", opponent.Title, opponent.Name, deadSoldiers);
+
+            return landTaken;
+
+        }
+
         private int ReleaseGrain(Player player)
         {
             double xp, zp;
@@ -327,7 +367,7 @@ namespace Paravia
             {
                 Console.WriteLine("How much grain will you release for consumption?");
                 Console.WriteLine("1 = Minimum ({0})", minimum);
-                Console.WriteLine("2 = Maximum ({1})", maximum);
+                Console.WriteLine("2 = Maximum ({0})", maximum);
                 Console.Write("or enter a number: ");
 
                 result = Console.ReadLine() ?? "0";
@@ -518,7 +558,7 @@ namespace Paravia
             player.DeadSerfs = Convert.ToInt32((Random(absc) + ord) * Convert.ToDouble(player.Serfs) / 100.0);
             player.Serfs += player.DeadSerfs;
 
-            Console.WriteLine("{0} serfs born this year.", player.Serfs);
+            Console.WriteLine("{0} serfs die this year.", player.Serfs);
         }
 
         private void BuySellGrain(Player player)

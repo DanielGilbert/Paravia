@@ -1,16 +1,8 @@
-﻿using Microsoft.Win32.SafeHandles;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Paravia
+﻿namespace Paravia
 {
     public record Player
     {
         public int Cathedral { get; internal set; }
-
         public string City { get; internal set; }
         public double LandPrice { get; internal set; }
         public double PublicWorks { get; internal set; }
@@ -55,6 +47,9 @@ namespace Paravia
         public int FleeingSerfs { get; internal set; }
         public int JusticeRevenue { get; internal set; }
         public int MillRevenue { get; internal set; }
+        public int CustomsDutyRevenue { get; internal set; }
+        public int SalesTaxRevenue { get; internal set; }
+        public int IncomeTaxRevenue { get; internal set; }
     }
 
     public class Game
@@ -294,7 +289,7 @@ namespace Paravia
 
             }
 
-            //AdjustTax(player);
+            AdjustTax(player);
             //DrawMap(player);
             //StatePurchases(player);
             //CheckNewTitle(player);
@@ -310,6 +305,75 @@ namespace Paravia
                 player.IWon = true;
             }
         }
+
+        private void AdjustTax(Player player)
+        {
+            string result = string.Empty;
+            int val = 1;
+            int duty = 0;
+
+            while (val != 0 || result[0] != 'q')
+            {
+                Console.WriteLine("{0} {1}", player.Title, player.Name);
+                GenerateIncome(player);
+            }
+        }
+
+        private void GenerateIncome(Player player)
+        {
+            double y;
+            int revenues = 0;
+            string justice = string.Empty;
+
+            player.JusticeRevenue = (player.Justice * 300 - 500) * player.TitleNum;
+
+            switch (player.Justice)
+            {
+                case 1:
+                    justice = "Very fair";
+                    break;
+
+                case 2:
+                    justice = "Moderate";
+                    break;
+
+                case 3:
+                    justice = "Harsh";
+                    break;
+
+                case 4:
+                    justice = "Outrageous";
+                    break;
+            }
+
+            y = 150.0 - Convert.ToDouble(player.SalesTax) - Convert.ToDouble(player.CustomsDuty) - Convert.ToDouble(player.IncomeTax);
+
+            if (y < 1.0)
+                y = 1.0;
+
+            y /= 100.0;
+
+            player.CustomsDutyRevenue = player.Nobles * 180 + player.Clergy * 75 + player.Merchants * 20 * Convert.ToInt32(y);
+            player.CustomsDutyRevenue += Convert.ToInt32(player.PublicWorks * 100.0);
+            player.CustomsDutyRevenue = Convert.ToInt32((Convert.ToDouble(player.CustomsDuty) / 100.0 * Convert.ToDouble(player.CustomsDutyRevenue)));
+
+            player.SalesTaxRevenue = player.Nobles * 50 + player.Merchants * 25 + Convert.ToInt32(player.PublicWorks * 10.0);
+            player.SalesTaxRevenue *= Convert.ToInt32(y * (5 - player.Justice) * player.SalesTax);
+            player.SalesTaxRevenue /= 200;
+
+            player.IncomeTaxRevenue = player.Nobles * 250 + Convert.ToInt32(player.PublicWorks * 20.0);
+            player.IncomeTaxRevenue += (10 * player.Justice * player.Nobles * Convert.ToInt32(y));
+            player.IncomeTaxRevenue *= player.IncomeTax;
+            player.IncomeTaxRevenue /= 100;
+
+            revenues = player.CustomsDutyRevenue + player.SalesTaxRevenue + player.IncomeTaxRevenue + player.JusticeRevenue;
+
+            Console.WriteLine();
+            Console.WriteLine("State revenues {0} gold florins.", revenues);
+            Console.WriteLine("Customs Duty\tSales Tax\tIncome Tax\tJustice");
+            Console.WriteLine("{0}\t\t{1}\t\t{2}\t\t{3} {4}", player.CustomsDutyRevenue, player.SalesTaxRevenue, player.IncomeTaxRevenue, player.JusticeRevenue, justice);
+        }
+
 
         private int AttackNeighbor(Player player, Player opponent)
         {

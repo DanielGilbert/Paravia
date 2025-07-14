@@ -538,6 +538,10 @@
             //This is missing in the C code.
             //We'll translate that from the original TRS-80.
             //(famous last words)
+
+
+            Console.WriteLine("(Press ENTER)");
+            Console.ReadLine();
         }
 
         private void AdjustTax(Player player)
@@ -592,7 +596,7 @@
                         break;
 
                     case 3:
-                        Console.Write("New sales tax (0 to 25): ");
+                        Console.Write("New income tax (0 to 25): ");
                         result = Console.ReadLine() ?? "0";
                         duty = Convert.ToInt32(result);
                         if (duty > 25)
@@ -975,6 +979,7 @@
                 Console.WriteLine();
                 Console.WriteLine("Rats ate {0}% of your grain reserves.", player.Rats);
                 PrintGrain(player);
+                Console.WriteLine();
                 Console.WriteLine("Grain\tGrain\tPrice of\tPrice of\tTreasury");
                 Console.WriteLine("Reserve\tDemand\tGrain\t\tLand");
                 Console.WriteLine("{0:d}\t{1:d}\t{2:d}\t\t{3:0.00}\t\t{4}", player.GrainReserve, player.GrainDemand, player.GrainPrice, player.LandPrice, player.Treasury);
@@ -1093,6 +1098,8 @@
 
         private void PrintGrain(Player player)
         {
+            Console.WriteLine();
+
             switch (player.Harvest)
             {
                 case 0:

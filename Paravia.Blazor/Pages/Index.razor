@@ -8,7 +8,7 @@
 <Blzr.Console.BlazorConsole @ref="c"
                             Name="fooTest"
                             ShowRepositoryUrl="true"
-                            AutoScroll="true"
+                            AutoScroll="true"                       
                             SetAutoFocusToConsoleInput="true"
                             UseOriginalSystemConsole="false" />
 
@@ -20,7 +20,7 @@
     protected async override Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
-            await InvokeAsync(Game.Run).ContinueWith(a =>
+            await InvokeAsync(ParaviaGame.Run).ContinueWith(a =>
             {
                 if (a.Exception != null)
                 {

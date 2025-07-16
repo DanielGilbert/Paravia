@@ -19,7 +19,7 @@ namespace Blzr.Console
         private readonly StringBuilder _StringBuilder = new StringBuilder();
         protected ConsoleInput? Command { get; set; }
         internal string Output = string.Empty;
-        protected string Placeholder { get; set; } = "Wait for input request.";
+        protected string Placeholder { get; set; } = "Waiting for input...";
         protected string? Disabled { get; set; } = DisabledString;
         public static readonly string? DisabledString = null;
         public event EventHandler<string>? ConsoleInputEvent;

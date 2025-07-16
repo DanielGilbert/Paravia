@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Threading.Tasks;
-using console = Console.Extensions.Console;
+﻿using console = Console.Extensions.Console;
 
 namespace Paravia
 {
@@ -58,7 +54,7 @@ namespace Paravia
         public int IncomeTaxRevenue { get; internal set; }
     }
 
-    public static class Game
+    public static class ParaviaGame
     {
         private static Random Randomizer = new System.Random();
         private static List<Player> Players = new();
@@ -146,7 +142,7 @@ namespace Paravia
 
         }
 
-        public static async void Run()
+        public static async Task Run()
         {
             Randomizer = new Random();
             console.WriteLine("Santa Paravia and Fiumaccio");
@@ -156,7 +152,7 @@ namespace Paravia
 
             if (!String.IsNullOrWhiteSpace(response) && (response.ToLower()[0] == 'y'))
             {
-                PrintInstructions();
+                await PrintInstructions();
             }
 
             console.WriteLine("How many people want to play (1 to 6)?");
@@ -1192,7 +1188,7 @@ namespace Paravia
             player.GrainReserve = ((player.GrainReserve * 100) - (player.GrainReserve * player.Rats)) / 100;
         }
 
-        private static async void PrintInstructions()
+        private static async Task PrintInstructions()
         {
             console.WriteLine("Santa Paravia and Fiumaccio");
             console.WriteLine();

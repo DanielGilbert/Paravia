@@ -1,0 +1,32 @@
+﻿@page "/"
+@using Paravia
+@using global::Blzr.Console;
+@using Microsoft.Extensions.Logging;
+
+@inject ILogger<App> _logger
+
+<Blzr.Console.BlazorConsole @ref="c"
+                            Name="fooTest"
+                            ShowRepositoryUrl="true"
+                            AutoScroll="true"
+                            SetAutoFocusToConsoleInput="true"
+                            UseOriginalSystemConsole="false" />
+
+
+@code
+{
+    BlazorConsole c;
+
+    protected async override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+            await InvokeAsync(Game.Run).ContinueWith(a =>
+            {
+                if (a.Exception != null)
+                {
+                    _logger.LogError(a.Exception, nameof(OnAfterRenderAsync));
+                }
+            });
+        await base.OnAfterRenderAsync(firstRender);
+    }
+}

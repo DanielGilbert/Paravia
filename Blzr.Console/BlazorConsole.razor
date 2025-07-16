@@ -1,0 +1,15 @@
+﻿@using Microsoft.AspNetCore.Components.Forms
+@using global::Blzr.Console;
+@using Microsoft.JSInterop;
+
+@inject IServiceProvider ServiceProvider
+@*@inject IRunningCommand RunningCommand*@
+@inject IJSRuntime JS;
+@inherits Blzr.Console.BlazorConsoleComponent
+
+<div id="console">
+    <pre>@((MarkupString)Output)</pre>
+    <EditForm OnValidSubmit="OnConsoleInputSubmit" autocomplete="off" Model="Command" novalidate>
+        <InputText id="@ConsoleInputId" autocomplete="off" disabled="@Disabled" placeholder="@Placeholder" @bind-Value="@Command.Text" />
+    </EditForm>
+</div>

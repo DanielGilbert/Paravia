@@ -199,10 +199,8 @@ namespace Paravia
                 {
                     new Player()
                 };
-                console.WriteLine("Init Player");
                 InitializePlayer(Players[i], 1400, i, gameLevel, rulersName, true);
             }
-            console.WriteLine("Play Game");
             await PlayGame(Players, NumberOfPlayers);
         }
 
@@ -970,10 +968,10 @@ namespace Paravia
                 console.WriteLine("Rats ate {0}% of your grain reserves.", player.Rats);
                 PrintGrain(player);
                 console.WriteLine();
-                console.WriteLine("Grain\tGrain\tPrice of\tPrice of\tTreasury");
-                console.WriteLine("Reserve\tDemand\tGrain\t\tLand");
-                console.WriteLine("{0:d}\t{1:d}\t{2:d}\t\t{3:0.00}\t\t{4}", player.GrainReserve, player.GrainDemand, player.GrainPrice, player.LandPrice, player.Treasury);
-                console.WriteLine("steres\tsteres\t1000 st.\thectare\t\tgold florins");
+                console.WriteLine("Grain\t\tGrain\t\tPrice of\tPrice of\tTreasury");
+                console.WriteLine("Reserve\t\tDemand\t\tGrain\t\tLand");
+                console.WriteLine("{0:d}\t\t{1:d}\t\t{2:d}\t\t\t{3:0.00}\t\t{4}", player.GrainReserve, player.GrainDemand, player.GrainPrice, player.LandPrice, player.Treasury);
+                console.WriteLine("steres\t\tsteres\t\t1000 st.\thectare\t\tgold florins");
                 console.WriteLine();
                 console.WriteLine("You have {0} hectares of land.", player.Land);
                 console.WriteLine();

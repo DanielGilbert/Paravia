@@ -424,10 +424,10 @@ namespace Paravia
                 console.WriteLine("{0} {1}", player.Title, player.Name);
                 console.WriteLine("State purchases.");
                 console.WriteLine();
-                console.WriteLine("1. Marketplace ({0})\t\t\t\t1000 florins", player.Marketplaces);
-                console.WriteLine("2. Woolen mill ({0})\t\t\t\t2000 florins", player.Mills);
-                console.WriteLine("3. Palace (partial) ({0})\t\t\t\t3000 florins", player.Palace);
-                console.WriteLine("4. Cathedral (partial) ({0})\t\t\t5000 florins", player.Cathedral);
+                console.WriteLine("1. Marketplace ({0})\t\t\t\t\t\t\t1000 florins", player.Marketplaces);
+                console.WriteLine("2. Woolen mill ({0})\t\t\t\t\t\t\t2000 florins", player.Mills);
+                console.WriteLine("3. Palace (partial) ({0})\t\t\t\t\t\t3000 florins", player.Palace);
+                console.WriteLine("4. Cathedral (partial) ({0})\t\t\t\t\t5000 florins", player.Cathedral);
                 console.WriteLine("5. Equip one platoon of serfs as soldiers\t500 florins");
                 console.WriteLine("You have {0} gold florins", player.Treasury);
                 console.WriteLine("To continue, enter q. To compare standings, enter 6");
@@ -477,7 +477,7 @@ namespace Paravia
             for (int i = 0; i < howMany; i++)
             {
                 console.WriteLine("{0} {1}", players[i].Title, players[i].Name);
-                console.WriteLine("{0}\t{1}\t\t{2}\t{3}\t\t{4}\t{5}\t{6}",
+                console.WriteLine("{0}\t\t{1}\t\t\t{2}\t\t{3}\t\t\t{4}\t{5}\t{6}",
                                   players[i].Nobles, players[i].Soldiers,
                                   players[i].Clergy, players[i].Merchants,
                                   players[i].Serfs, players[i].Land,
@@ -544,9 +544,9 @@ namespace Paravia
                 console.WriteLine("{0} {1}", player.Title, player.Name);
                 GenerateIncome(player);
 
-                console.WriteLine("({0}%)\t\t({1}%)\t\t({2}%)", player.CustomsDuty, player.SalesTax, player.IncomeTax);
-                console.WriteLine("1.Customs Duty, 2.Sales Tax, 3.Wealth Tax, ");
-                console.WriteLine("4. Justice");
+                console.WriteLine("({0}%)\t\t\t({1}%)\t\t({2}%)", player.CustomsDuty, player.SalesTax, player.IncomeTax);
+                console.WriteLine("1.Customs Duty, 2.Sales Tax, 3.Wealth Tax,");
+                console.WriteLine("4.Justice");
                 console.Write("Enter tax number for changes, q to continue: ");
 
                 result = await console.ReadLineAsync() ?? "q";
@@ -700,7 +700,7 @@ namespace Paravia
             console.WriteLine();
             console.WriteLine("State revenues {0} gold florins.", revenues);
             console.WriteLine("Customs Duty\tSales Tax\tIncome Tax\tJustice");
-            console.WriteLine("{0}\t\t{1}\t\t{2}\t\t{3} {4}", player.CustomsDutyRevenue, player.SalesTaxRevenue, player.IncomeTaxRevenue, player.JusticeRevenue, justice);
+            console.WriteLine("{0}\t\t\t\t{1}\t\t\t{2}\t\t\t{3} ({4})", player.CustomsDutyRevenue, player.SalesTaxRevenue, player.IncomeTaxRevenue, player.JusticeRevenue, justice);
         }
 
 

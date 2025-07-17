@@ -19,7 +19,8 @@ namespace Blzr.Console
         private readonly StringBuilder _StringBuilder = new StringBuilder();
         protected ConsoleInput? Command { get; set; }
         internal string Output = string.Empty;
-        protected string Placeholder { get; set; } = "Waiting for input...";
+        [Parameter]
+        public string Placeholder { get; set; } = "Waiting for input...";
         protected string? Disabled { get; set; } = DisabledString;
         public static readonly string? DisabledString = null;
         public event EventHandler<string>? ConsoleInputEvent;
@@ -112,7 +113,7 @@ namespace Blzr.Console
         {
             CommandTaskCompletionSource = new TaskCompletionSource<string>();
             string result = "";
-            await InvokeAsync(ToggleReadOnly);
+            await InvokeAsync(() => { ToggleReadOnly(true); });
             await InvokeAsync(async () =>
             {
                 //wait until the user enterted the command
@@ -120,7 +121,7 @@ namespace Blzr.Console
                 //display the users input
                 await WriteLineAsync(result);
             });
-            await InvokeAsync(ToggleReadOnly);
+            await InvokeAsync(() => { ToggleReadOnly(false); });
             CommandTaskCompletionSource = null;
             return result;
         }
@@ -215,9 +216,9 @@ namespace Blzr.Console
                 await JSRuntime.InvokeVoidAsync("BlazorConsole.setFocusToElement", ConsoleInputId);
             }
         }
-        public void ToggleReadOnly()
+        public void ToggleReadOnly(bool isWritable)
         {
-            if (Disabled == null)
+            if (isWritable is false)
             {
                 DisableInput();
             }
@@ -235,7 +236,7 @@ namespace Blzr.Console
 
         private void DisableInput()
         {
-            Placeholder = "Wait for input request.";
+            Placeholder = "No input needed.";
         }
 
         public void Dispose()
